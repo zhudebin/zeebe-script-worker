@@ -9,7 +9,7 @@ This is a Zeebe worker to evaluate scripts. Scripts are useful to create/modify 
 * output payload contains `result` - the result of the evaluation   
 
 Available script languages:
-* javascript (Oracle Nashorn)
+* [javascript](https://www.graalvm.org/) (GraalVM JS)
 * [groovy](http://groovy-lang.org/)
 * [feel](https://github.com/camunda/feel-scala)
 

@@ -15,41 +15,27 @@
  */
 package io.zeebe.script;
 
-import java.util.HashMap;
 import java.util.Map;
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ScriptEvaluator {
 
-  private final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-
-  private final Map<String, ScriptEngine> cachedScriptEngines = new HashMap<>();
+  private final GraalEvaluator graalEvaluator = new GraalEvaluator();
+  private final ScriptEngineEvaluator scriptEngineEvaluator = new ScriptEngineEvaluator();
 
   public Object evaluate(String language, String script, Map<String, Object> variables) {
 
-    final ScriptEngine scriptEngine =
-        cachedScriptEngines.computeIfAbsent(language, scriptEngineManager::getEngineByName);
-
-    if (scriptEngine == null) {
-      final String msg = String.format("No script engine found with name '%s'", language);
-      throw new RuntimeException(msg);
-    }
-
-    final ScriptContext context = scriptEngine.getContext();
-    final Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
-    bindings.putAll(variables);
-
     try {
 
-      return scriptEngine.eval(script, context);
+      if (GraalEvaluator.SUPPORTED_LANGUAGES.contains(language)) {
+        return graalEvaluator.evaluate(language, script, variables);
 
-    } catch (ScriptException e) {
+      } else {
+        return scriptEngineEvaluator.evaluate(language, script, variables);
+      }
+
+    } catch (Exception e) {
       final String msg = String.format("Failed to evaluate script '%s' (%s)", script, language);
       throw new RuntimeException(msg, e);
     }
