@@ -4,7 +4,7 @@
     <name>Zeebe Script Worker</name>
     <groupId>io.zeebe</groupId>
     <artifactId>zeebe-script-worker</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <packaging>jar</packaging>
 
     <parent>
