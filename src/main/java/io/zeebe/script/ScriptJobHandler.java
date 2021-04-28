@@ -20,6 +20,7 @@ import io.zeebe.client.api.response.ActivatedJob;
 import io.zeebe.client.api.worker.JobClient;
 import io.zeebe.client.api.worker.JobHandler;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,12 +29,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class ScriptJobHandler implements JobHandler {
 
   private static final String HEADER_LANGUAGE = "language";
   private static final String HEADER_SCRIPT = "script";
-
-  private final ScriptEvaluator scriptEvaluator = new ScriptEvaluator();
 
   private final ZeebeClient zeebeClient;
 
@@ -55,9 +55,9 @@ public class ScriptJobHandler implements JobHandler {
     // add context
     variables.put("job", job);
     variables.put("zeebeClient", zeebeClient);
-
+    final ScriptEvaluator scriptEvaluator = new ScriptEvaluator();
     final Object result = scriptEvaluator.evaluate(language, script, variables);
-
+    log.info("language:{},script:{},result:{}", language, script, result);
     jobClient
         .newCompleteCommand(job.getKey())
         .variables(Collections.singletonMap("result", result))
