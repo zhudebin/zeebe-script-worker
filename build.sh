@@ -1,2 +1,2 @@
 #! /bin/bash
-docker build -t zeebe-script-worker:1.0 .
+docker build -t zeebe-script-worker:0.8.1 .
